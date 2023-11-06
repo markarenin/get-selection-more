@@ -96,8 +96,6 @@ export function getSentenceFromSelection(selection: Selection | null): {
   const sentence = (sentenceHead + selectedText + sentenceTail).replace(/\s+/g, ' ').trim();
 
   // Calculate the start and end positions of the sentence within the full paragraph
-  console.log(sentenceHead.trimLeft())
-  console.log(sentenceHead.trimLeft().length)
   const selectionStart = sentenceHead.trimLeft().length
   const selectionEnd = sentenceHead.trimLeft().length + selectedText.length;
 
