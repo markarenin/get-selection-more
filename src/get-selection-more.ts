@@ -68,36 +68,46 @@ export function getParagraph(win = window): string {
 /**
  * Returns the sentence containing the selection text.
  */
-export function getSentenceFromSelection(selection: Selection | null): string {
+export function getSentenceFromSelection(selection: Selection | null): {
+  sentence: string;
+  start: number;
+  end: number
+} {
   if (!selection || selection.rangeCount <= 0) {
-    return ''
+    return {'sentence': '', 'start': 0, 'end': 0}
   }
 
   const selectedText = selection.toString()
   if (!selectedText.trim()) {
-    return ''
+    return {'sentence': '', 'start': 0, 'end': 0}
   }
 
   const range = selection.getRangeAt(0)
   // double sanity check, which is unlikely to happen due to the rangeCount check above
   /* istanbul ignore if */
   if (!range) {
-    return ''
+    return {'sentence': '', 'start': 0, 'end': 0}
   }
 
-  return (
-    extractSentenceHead(extractParagraphHead(range)) +
-    selectedText +
-    extractSentenceTail(extractParagraphTail(range))
-  )
-    .replace(/\s+/g, ' ')
-    .trim()
+  const paragraphHead = extractParagraphHead(range);
+  const paragraphTail = extractParagraphTail(range);
+  const sentenceHead = extractSentenceHead(paragraphHead).replace(/\s+/g, ' ');
+  const sentenceTail = extractSentenceTail(paragraphTail).replace(/\s+/g, ' ');
+  const sentence = (sentenceHead + selectedText + sentenceTail).replace(/\s+/g, ' ').trim();
+
+  // Calculate the start and end positions of the sentence within the full paragraph
+  console.log(sentenceHead.trimLeft())
+  console.log(sentenceHead.trimLeft().length)
+  const selectionStart = sentenceHead.trimLeft().length
+  const selectionEnd = sentenceHead.trimLeft().length + selectedText.length;
+
+  return { sentence: sentence, start: selectionStart, end: selectionEnd };
 }
 
 /**
  * Returns the sentence containing the selection text.
  */
-export function getSentence(win = window): string {
+export function getSentence(win = window): { sentence: string; start: number; end: number } {
   return getSentenceFromSelection(win.getSelection())
 }
 
